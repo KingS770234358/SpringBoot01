@@ -1,0 +1,105 @@
+# 默认配置 No active profile set, falling back to default profiles: default
+server:
+  port: 8081
+spring:
+  profiles:
+    active: dev
+  http:
+    encoding:
+      enabled:
+---
+# 11 测试配置环境可以配置哪些东西 #####
+# 笔记01applicationProper配置文件.md
+#
+
+---
+# 测试多环境切换
+# 开发环境
+server:
+  port: 8082
+spring:
+  profiles: dev
+---
+# 测试环境
+server:
+  port: 8083
+spring:
+  profiles: test
+---
+# 上节课测试环境
+####################################################################
+## SpringBoot只测试java项目,不测试web项目,第一次还要联网测试(要加载依赖)
+####################################################################
+# SpringBoot到底可以配置哪些东西
+# 建议使用application.yaml文件配置
+# SpringBoot使用全局配置文件,名称是固定的application.yaml
+###################################################################
+# application.properties 语法结构 key=value server.port=8080
+###################################################################
+# application.yaml 语法结构key: value   冒号后面一定要有空格
+#                         server:
+#                           port: 8080
+# 配置文件作用:可以修改tomcat的默认配置,甚至可换内置的tomcat服务器
+###################################################################
+# 可以上官网查看配置(但是太多了)
+
+# 更改项目的端口号
+server:
+  port: 8080
+spring:
+  profiles: 10lessonLearning
+#################################################
+# * 原来给属性赋值方式:
+# * 1.在属性上或者属性对应的set方法上使用@Value("")注解
+# * 2.在类上使用@ConfigurationProperties标签可以使用yaml赋值
+# *   a.在没有配置的情况下加这个注解IDEA上方爆红,但是不影响运行,要根据所提示的文档进行设置后就不会爆红了。
+#       就是要在pom.xml中导入一个依赖,主要作用是写 dependencies{..}的时候会有提示;
+#       IDEA右上方提示的Open document 还得将url中的版本信息改成2.1.9才能访问到...
+# *   b.使用prefix=key.key1.key2...的赋值方式,在springboot全局配置文件中一定要有相关的键key1 2 3存在,如下所示
+# *   c.要求key下面的每个子key一定要和这个Person类的属性一模一样,否则无法取到,将为空
+#     d.松散绑定: 比如Dog类有个 firstName 属性,并且 getfirstName setfirstName 方法里面的形参也是 firstName,
+#       则在yaml中可以用first-name给它的firstName属性绑定值
+#       即 驼峰命名方式可以与以中划线"-"划分的命名方式进行绑定
+#       但是@Value()就没有这个特性
+##===============>作用:可以给自己写的java config类绑定配置文件的值
+# * 3.还可以使用properties文件绑定配置:
+#     在类(Person)上使用@PropertySource("qingjiang.properties")
+#     然后在属性上使用@Value("${name}") SpEL表达式${key}来取出配置文件里key的对应值,给属性赋值
+#     qingjiang.properties内容为name=狂神
+#     a.properties配置文件还可能出现乱码问题
+#       解决方式:在IDEA中file->setting搜索file encoding
+#       更改Encoding for project和default encoding for properties file的编码格式成utf-8
+# 使用yaml给Person对象赋值
+person:
+  name: qinjiang
+  age: 3
+  happy: false
+  birthday: 2019/11/12
+  # 要用空格分隔
+  maps: {k1: v1,k2: v2}
+  things: [wq,xq]
+  hello: 替换掉默认值用的名字
+  dog:
+    name: ${person.hello:默认值}_旺财
+    age: 1
+#############################
+# 可以直接使用SpEL表达式取值 #
+#############################
+
+# 在配置了包的情况下, 可以直接使用Spring中的一些函数
+num: ${random.uuid}
+
+# 可以使用占位符设置默认值
+# ${person.hello:默认值} 冒号前面表示有值情况的取值,冒号后面表示无值情况下使用的默认值
+# hello: 替换掉默认值用的名字
+# dog:
+#   name: ${person.hello:默认值}_旺财
+#   age: 1
+######################################################################################
+# !!!!流程总结!!!!:
+# 1.在pom.xml中导入依赖,配置处理器configuration-processor包
+# 2.编写yaml配置文件
+# 3.编写java Config配置文件类
+# 4.在java Config配置文件类上使用注解@ConfigurationProperties(prefix = "person")绑定配置
+# 5.使用springboot在测试文件夹test下编写的测试文件类进行测试
+#######################################################################################
